@@ -32,8 +32,13 @@ export default class UserController{
     async register(req:Request, res:Response){
         try{
             const {email, name, second_name, job_ocupation, number_phone, password, tokens} = req.body;
+            if(typeof tokens == 'string'){
+                var _tokens:Set<string> = new Set(JSON.parse(tokens));
+            }else{
+                var _tokens:Set<string> = new Set(tokens);
+            }
             const _password = await bc.hash(password, 10);
-            await this.userModel.insert({email, name, second_name, job_ocupation, number_phone, password: _password, tokens});
+            await this.userModel.insert({email, name, second_name, job_ocupation, number_phone, password: _password, tokens: _tokens});
             const token = jwt.sign({email}, process.env.JWT_SECRET!);
             res.status(200).json({'data': token});
         }catch(error){
