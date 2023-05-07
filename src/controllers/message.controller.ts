@@ -18,9 +18,10 @@ export default class MessageController{
 
     async insert(req:Request, res:Response){
         try{
-            const {email_user_addresse, email_user_sender, title, message, tokens} = req.body;
+            const {sender} = req.params
+            const {email_user_addresse, title, message, tokens} = req.body;
             await this.messageModel.insert({
-                email_user_addresse, email_user_sender, title, message, tokens,
+                email_user_addresse, email_user_sender: sender, title, message, tokens,
                 date: new Date()
             });
             res.status(200).json({'message': 'inserted'});

@@ -2,8 +2,10 @@ import { Response, Request } from "express";
 import UserModel from "models/user.model";
 import bc from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import fs from 'fs';
 
-export default class MessageController{
+export default class UserController{
 
     constructor(private readonly userModel:UserModel){}
 
@@ -73,4 +75,19 @@ export default class MessageController{
             }
         }
     }
+
+    getUserImage(req:Request, res:Response){
+        try{
+            const {email} = req.params;
+            var route = path.join(__dirname, `../../uploads/${email}.jpg`);
+            fs.open(route, 'r', (err, df)=>{
+                if(err) res.status(404).json({status: true, message: "Image not found"});
+                else{
+                    res.sendFile(route);
+                }
+            });
+        }catch(error){
+            res.status(500).json({status: false, message: 'internal error server'});
+        }
+    } 
 }
