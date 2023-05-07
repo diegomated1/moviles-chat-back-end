@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import express from 'express';
 import morgan from 'morgan';
 import ChatRouter from './router/chat.router';
@@ -17,7 +16,6 @@ export default class Server{
     }
 
     private config(){
-        dotenv.config();
         this.app.use(express.json());
         this.app.use(morgan('dev'));
     }
