@@ -1,6 +1,6 @@
 import admin from 'firebase-admin';
 import serviceAccount from '../../keys/primero-170a0-firebase-adminsdk-xjejm-b2cd05d626.json';
-import { Message } from 'interfaces/message-firebase.interface';
+import { Message } from '../interfaces/message-firebase.interface';
 
 export default class Notifications{
 
