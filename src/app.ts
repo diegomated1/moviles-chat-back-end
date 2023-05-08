@@ -8,11 +8,11 @@ import MessageController from "./controllers/message.controller";
 import UserModel from "./models/user.model";
 import MessageModel from "./models/message.model";
 import ChatDatabase from "./database/chat.database";
+import Notifications from './firebase/notifications';
 import express from 'express';
 import http from 'http';
-import SocketServer from 'socket-server';
+import SocketServer from './socket-server';
 import io from 'socket.io';
-import Notifications from 'firebase/notifications';
 
 const database = new ChatDatabase();
 database.connect();
