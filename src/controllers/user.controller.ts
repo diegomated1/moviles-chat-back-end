@@ -11,12 +11,13 @@ export default class UserController{
 
     async login(req:Request, res:Response){
         try{
-            const {email, password} = req.body;
+            const {email, password, tokenFCM} = req.body;
             const user = await this.userModel.get_by_email(email);
             if(user){
                 const math = await bc.compare(password, user.password);
                 if(math){
                     const token = jwt.sign({email: user.email}, process.env.JWT_SECRET!);
+                    await this.userModel.add_token(email, tokenFCM);
                     res.status(200).json({'data': token});
                 }else{
                     res.status(400).json({'data': 'Invalid credentials'});
