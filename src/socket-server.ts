@@ -1,9 +1,9 @@
-import MessageModel from "models/message.model";
+import MessageModel from "./models/message.model";
 import http from 'http';
 import io from 'socket.io';
 import ChatListeners from './listeners/chat.listeners';
 import Notifications from "firebase/notifications";
-import UserModel from "models/user.model";
+import UserModel from "./models/user.model";
 
 export default class SocketServer{
 
