@@ -12,6 +12,7 @@ import express from 'express';
 import http from 'http';
 import SocketServer from 'socket-server';
 import io from 'socket.io';
+import Notifications from 'firebase/notifications';
 
 const database = new ChatDatabase();
 database.connect();
@@ -20,10 +21,11 @@ const messageModel = new MessageModel(database);
 const userController = new UserController(userModel);
 const messageController = new MessageController(messageModel);
 const chatRouter = new ChatRouter(userController, messageController);
+const notifications = new Notifications();
 
 const app = express();
 const http_server = new http.Server(app);
 const ioServer = new io.Server(http_server);
 
-const socketServer = new SocketServer(http_server, messageModel, ioServer);
+const socketServer = new SocketServer(http_server, messageModel, ioServer, notifications);
 const expresServer = new ExpressServer(app, http_server, chatRouter);

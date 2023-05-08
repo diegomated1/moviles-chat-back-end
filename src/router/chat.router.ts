@@ -20,7 +20,7 @@ export default class ChatRouter {
         this.router.route('/register').post(imageSave.single('user_image'), this.userController.register);
         this.router.route('/auth').post(this.userController.auth);
         this.router.route('/users').get(this.userController.get_all);
-        this.router.route('/users/:sender/messages').post(this.messageController.insert);
+        //this.router.route('/users/:sender/messages').post(this.messageController.insert);
         this.router.route('/users/:sender/messages/:addressee').get(this.messageController.get_by_addressee);
     }
 
