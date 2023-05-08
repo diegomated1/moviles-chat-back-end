@@ -27,5 +27,5 @@ const app = express();
 const http_server = new http.Server(app);
 const ioServer = new io.Server(http_server);
 
-const socketServer = new SocketServer(http_server, messageModel, ioServer, notifications);
+const socketServer = new SocketServer(http_server, userModel, messageModel, ioServer, notifications);
 const expresServer = new ExpressServer(app, http_server, chatRouter);
