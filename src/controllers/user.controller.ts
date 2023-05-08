@@ -35,6 +35,7 @@ export default class UserController{
     register = async (req:Request, res:Response) => {
         try{
             const {email, name, second_name, job_ocupation, number_phone, password, token} = req.body;
+            console.log(req.body);
             const _password = await bc.hash(password, 10);
             await this.userModel.insert({email, name, second_name, job_ocupation, number_phone, password: _password, tokens: new Set([token])});
             const _token = jwt.sign({email}, process.env.JWT_SECRET!);
@@ -109,7 +110,7 @@ export default class UserController{
     getUserImage = async (req:Request, res:Response) => {
         try{
             const {email} = req.params;
-            var route = path.join(__dirname, `../../uploads/${email}.jpg`);
+            var route = path.join(__dirname, `../../../uploads/${email}.jpg`);
             fs.open(route, 'r', (err, df)=>{
                 if(err) res.status(404).json({status: true, message: "Image not found"});
                 else{
