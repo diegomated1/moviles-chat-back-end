@@ -1,5 +1,5 @@
-import ChatDatabase from "database/chat.database";
-import IUser from "interfaces/user.interface";
+import ChatDatabase from "../database/chat.database";
+import IUser from "../interfaces/user.interface";
 
 
 export default class UserModel{
@@ -14,7 +14,8 @@ export default class UserModel{
         return new Promise(async(res, rej)=>{
             try{
                 const params = [
-                    user.email, user.name, user.second_name, user.job_ocupation, user.number_phone, user.password, user.tokens
+                    user.email, user.name, user.second_name, user.job_ocupation, user.number_phone, user.password,
+                    Array.from(user.tokens)
                 ];
                 const query = `INSERT INTO users_by_email (${this.columns.join(', ')}) VALUES (?, ?, ?, ?, ?, ?, ?)`;
                 await this.db.client.execute(query, params, {prepare: true});
@@ -45,21 +46,25 @@ export default class UserModel{
         });
     }    
 
-    get_by_email(email:string):Promise<IUser>{
+    get_by_email(email:string):Promise<IUser|null>{
         return new Promise(async(res, rej)=>{
             try{
                 const query = `SELECT * FROM users_by_email WHERE email = ?`;
                 const query_result = await this.db.client.execute(query, [email], {prepare: true});
                 const _user = query_result.first();
-                res({
-                    email: _user.email,
-                    name: _user.name,
-                    second_name: _user.second_name,
-                    job_ocupation: _user.job_ocupation,
-                    number_phone: _user.number_phone,
-                    password: _user.pasword,
-                    tokens: _user.tokens
-                });
+                if(_user){
+                    res({
+                        email: _user.email,
+                        name: _user.name,
+                        second_name: _user.second_name,
+                        job_ocupation: _user.job_ocupation,
+                        number_phone: _user.number_phone,
+                        password: _user.password,
+                        tokens: _user.tokens
+                    });
+                }else{
+                    res(null);
+                }
             }catch(error){
                 rej(error);
             }
@@ -70,7 +75,7 @@ export default class UserModel{
         return new Promise(async(res, rej)=>{
             try{
                 const query = `UPDATE users_by_email SET tokens = tokens + ? WHERE email = ?`;
-                await this.db.client.execute(query, [token, email], {prepare: true});
+                await this.db.client.execute(query, [[token], email], {prepare: true});
                 res(true);
             }catch(error){
                 rej(error);
@@ -82,7 +87,7 @@ export default class UserModel{
         return new Promise(async(res, rej)=>{
             try{
                 const query = `UPDATE users_by_email SET tokens = tokens - ? WHERE email = ?`;
-                await this.db.client.execute(query, [token, email], {prepare: true});
+                await this.db.client.execute(query, [[token], email], {prepare: true});
                 res(true);
             }catch(error){
                 rej(error);

@@ -1,5 +1,5 @@
-import ChatDatabase from "database/chat.database";
-import IMessage from "interfaces/message.interface";
+import ChatDatabase from "../database/chat.database";
+import IMessage from "../interfaces/message.interface";
 
 
 export default class MessageModel{
