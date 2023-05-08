@@ -6,17 +6,17 @@ export default class MessageController{
 
     constructor(private readonly messageModel:MessageModel){}
 
-    async get_by_addressee(req:Request, res:Response){
+    get_by_addressee = async (req:Request, res:Response) => {
         try{
-            const {sender, addressee} = req.params;
-            const messages = await this.messageModel.get_by_addressee(sender, addressee);
+            const {email, addressee} = req.params;
+            const messages = await this.messageModel.get_by_addressee(email, addressee);
             res.status(200).json({'data': messages});
         }catch(error){
             res.status(500).json({'message': 'internal error server'});
         }
     }
 
-    async insert(req:Request, res:Response){
+    insert = async (req:Request, res:Response) => {
         try{
             const {sender} = req.params
             const {email_user_addresse, title, message, tokens} = req.body;

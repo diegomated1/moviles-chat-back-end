@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import UserModel from "models/user.model";
+import UserModel from "../models/user.model";
 import bc from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import path from 'path';
@@ -7,9 +7,10 @@ import fs from 'fs';
 
 export default class UserController{
 
-    constructor(private readonly userModel:UserModel){}
+    constructor(private readonly userModel:UserModel){
+    }
 
-    async login(req:Request, res:Response){
+    login = async (req:Request, res:Response) => {
         try{
             const {email, password, tokenFCM} = req.body;
             const user = await this.userModel.get_by_email(email);
@@ -23,31 +24,42 @@ export default class UserController{
                     res.status(400).json({'data': 'Invalid credentials'});
                 }
             }else{
-                res.status(200).json({'message': 'Invalid credentials'});
+                res.status(400).json({'message': 'Invalid credentials'});
             }
         }catch(error){
+            console.log(error);
             res.status(500).json({'message': 'internal error server'});
         }
     }
 
-    async register(req:Request, res:Response){
+    register = async (req:Request, res:Response) => {
         try{
-            const {email, name, second_name, job_ocupation, number_phone, password, tokens} = req.body;
-            if(typeof tokens == 'string'){
-                var _tokens:Set<string> = new Set(JSON.parse(tokens));
-            }else{
-                var _tokens:Set<string> = new Set(tokens);
-            }
+            const {email, name, second_name, job_ocupation, number_phone, password, token} = req.body;
             const _password = await bc.hash(password, 10);
-            await this.userModel.insert({email, name, second_name, job_ocupation, number_phone, password: _password, tokens: _tokens});
-            const token = jwt.sign({email}, process.env.JWT_SECRET!);
-            res.status(200).json({'data': token});
+            await this.userModel.insert({email, name, second_name, job_ocupation, number_phone, password: _password, tokens: new Set([token])});
+            const _token = jwt.sign({email}, process.env.JWT_SECRET!);
+            res.status(200).json({'data': _token});
+        }catch(error){
+            console.log(error);
+            res.status(500).json({'message': 'internal error server'});
+        }
+    }
+
+    get_by_email = async (req:Request, res:Response) => {
+        try{
+            const {email} = req.params;
+            const user = await this.userModel.get_by_email(email);
+            if(user){
+                res.status(200).json({'data': user});
+            }else{
+                res.status(404).json({'message': 'user not found'});
+            }
         }catch(error){
             res.status(500).json({'message': 'internal error server'});
         }
     }
 
-    async get_all(req:Request, res:Response){
+    get_all = async (req:Request, res:Response) => {
         try{
             const users = await this.userModel.get_all();
             res.status(200).json({'data': users});
@@ -56,7 +68,7 @@ export default class UserController{
         }
     }
 
-    async auth(req:Request, res:Response){
+    auth = async (req:Request, res:Response) => {
         try{
             const auth = req.get('Authorization');
             if(auth===undefined) throw "There is no token in the header";
@@ -82,7 +94,19 @@ export default class UserController{
         }
     }
 
-    getUserImage(req:Request, res:Response){
+    remove_token = async (req:Request, res:Response) => {
+        try{
+            const {email} = req.params;
+            const {token} = req.body;
+            const users = await this.userModel.remove_token(email, token);
+            res.status(200).json({'data': users});
+        }catch(error){
+            console.log(error);
+            res.status(500).json({'message': 'internal error server'});
+        }
+    }
+
+    getUserImage = async (req:Request, res:Response) => {
         try{
             const {email} = req.params;
             var route = path.join(__dirname, `../../uploads/${email}.jpg`);
