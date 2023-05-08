@@ -2,7 +2,7 @@ import Notifications from 'firebase/notifications';
 import IMessage from '../interfaces/message.interface';
 import MessageModel from '../models/message.model';
 import {Server, Socket} from 'socket.io';
-import UserModel from 'models/user.model';
+import UserModel from '../models/user.model';
 
 export default class ChatListeners{
 
