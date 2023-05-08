@@ -22,6 +22,7 @@ export default class ChatRouter {
         this.router.route('/users').get(this.userController.get_all);
         //this.router.route('/users/:sender/messages').post(this.messageController.insert);
         this.router.route('/users/:sender/messages/:addressee').get(this.messageController.get_by_addressee);
+        this.router.route('/images/:email').get(this.userController.getUserImage);
     }
 
 }
