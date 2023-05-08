@@ -8,17 +8,17 @@ import UserModel from "./models/user.model";
 export default class SocketServer{
 
     constructor(
-        private readonly server: http.Server,
         private readonly userModel: UserModel,
         private readonly messageModel: MessageModel,
         private readonly ioServer: io.Server,
         private readonly notifications: Notifications,
     ){
-        this.ioServer = new io.Server(this.server);
+        this.connect();
     }
 
-    connect(){
+    connect = ()=>{
         this.ioServer.on('connection', (socket)=>{
+            console.log("conectado");
             const {id_chat} = socket.handshake.query;
             if(id_chat){
                 socket.join(`chat:${id_chat}`);
