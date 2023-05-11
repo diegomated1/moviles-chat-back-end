@@ -16,29 +16,31 @@ export default class ChatListeners{
         this.listeners();
     }
 
-    private async chatMessage(message:Omit<Omit<IMessage, 'date'>, 'tokens'>){
+    private  chatMessage = async (message:Omit<Omit<IMessage, 'date'>, 'tokens'>) => {
         try{
             const date = new Date();
             
             const user_addresse = await this.userModel.get_by_email(message.email_user_addresse);
             if(!user_addresse) throw 'User not found';
             const {tokens} = user_addresse;
+            const _tokens = Array.from(tokens||[]);
 
-            const _message:IMessage = {...message, date, tokens: Array.from(tokens)};
+            const _message:IMessage = {...message, date, tokens: _tokens};
             await this.messageModel.insert(_message);
-
-            for(let token in tokens){
-                this.notifications.send({
-                    token, data: {
-                        title: message.title,
-                        message: message.message
-                    }
-                });
-            }
-
-            const room_name = `room_${[message.email_user_sender, message.email_user_addresse].sort().join('_')}`;
+            
+            await this.notifications.send({
+                tokens: _tokens,
+                data: {
+                    title: `${user_addresse.name} ${user_addresse.second_name}`,
+                    message: message.message,
+                    from: message.email_user_sender
+                }
+            });
+            
+            const room_name = [message.email_user_sender, message.email_user_addresse].sort().join("");
             this.io.to(`chat:${room_name}`).emit('chat:message', _message);
         }catch(error){
+            console.log(error);
             this.socket.emit('chat:error', 'Could not send message');
         }
     };
